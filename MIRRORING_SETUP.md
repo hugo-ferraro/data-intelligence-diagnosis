@@ -38,8 +38,8 @@ Or simply double-click the `mirror.bat` file.
 
 ### Method 3: Manual Commands
 ```bash
-git push origin master
-git push personal master
+git push origin main
+git push personal main
 ```
 
 ## 📝 Workflow
@@ -81,12 +81,12 @@ Visit both repositories in your browser:
 - The organization repository may require different credentials than your personal repository
 
 ### Branch Management
-- The mirroring is configured for the `master` branch
+- The mirroring is configured for the `main` branch
 - If you work on feature branches, you'll need to push them manually to both repositories
 - Consider creating a similar script for other branches if needed
 
 ### Conflict Resolution
-- Always pull from the organization repository first: `git pull origin master`
+- Always pull from the organization repository first: `git pull origin main`
 - Resolve any conflicts before pushing to either repository
 - The personal repository should always mirror the organization repository
 
@@ -97,13 +97,13 @@ Visit both repositories in your browser:
 2. Verify you have access to both repositories
 3. Try pushing manually to identify the issue:
    ```bash
-   git push origin master
-   git push personal master
+   git push origin main
+   git push personal main
    ```
 
 ### If Repositories Get Out of Sync
-1. Pull the latest from organization: `git pull origin master`
-2. Force push to personal: `git push personal master --force` (use with caution)
+1. Pull the latest from organization: `git pull origin main`
+2. Force push to personal: `git push personal main --force` (use with caution)
 3. Run the mirror script to verify sync
 
 ### Adding New Remotes

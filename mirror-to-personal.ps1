@@ -15,7 +15,7 @@ function Write-Status {
 # Push to organization repository (origin)
 Write-Status "📤 Pushing to organization repository (origin)..." "Yellow"
 try {
-    git push origin master
+    git push origin main
     Write-Status "✅ Successfully pushed to organization repository" "Green"
 } catch {
     Write-Status "❌ Failed to push to organization repository" "Red"
@@ -26,7 +26,7 @@ try {
 # Push to personal repository (personal)
 Write-Status "📤 Pushing to personal repository (personal)..." "Yellow"
 try {
-    git push personal master
+    git push personal main
     Write-Status "✅ Successfully pushed to personal repository" "Green"
 } catch {
     Write-Status "❌ Failed to push to personal repository" "Red"
