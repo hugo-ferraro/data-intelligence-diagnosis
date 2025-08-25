@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Data Maturity Diagnosis - Next.js
 
-## Getting Started
+This is a Next.js version of the data maturity diagnostic application, converted from the original Vite project.
 
-First, run the development server:
+## Features
 
+- **Multi-step diagnostic form** with progress tracking
+- **Real-time scoring** based on user responses
+- **PDF generation** for diagnostic results
+- **Responsive design** with modern UI components
+- **Analytics integration** (Google Tag Manager, Google Analytics, Facebook Pixel)
+- **Database integration** for storing diagnostic data
+
+## Pages
+
+- **Home** (`/`) - Landing page with diagnostic introduction
+- **Diagnostic** (`/diagnostic`) - Multi-step form for data collection
+- **Results** (`/results`) - Detailed analysis and scoring results
+
+## Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install --legacy-peer-deps
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── diagnostic/        # Diagnostic form page
+│   ├── results/           # Results display page
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Home page
+├── components/            # UI components (shadcn/ui)
+├── content/              # Static content and dictionaries
+├── hooks/                # Custom React hooks
+├── lib/                  # Utility functions and services
+│   ├── database/         # Database configuration
+│   ├── services/         # API services
+│   ├── pdf-generator.tsx # PDF generation logic
+│   ├── scoring.ts        # Scoring algorithms
+│   └── utils.ts          # Utility functions
+└── types/                # TypeScript type definitions
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Key Differences from Vite Version
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Uses Next.js App Router instead of React Router
+- Client-side navigation with `useRouter` from Next.js
+- Server-side rendering capabilities
+- Optimized for production deployment
+- Better SEO support
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Technologies Used
 
-## Deploy on Vercel
+- **Next.js 15** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI components
+- **Radix UI** - Accessible components
+- **React Hook Form** - Form handling
+- **PDF generation** - Client-side PDF creation
+- **Analytics** - Google Tag Manager integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application maintains the same functionality as the original Vite version while leveraging Next.js features for better performance and developer experience.

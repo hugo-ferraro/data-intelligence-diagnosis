@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "paragraphs": {
+    "Q1": {
+      "A": "Hoje suas informações estão dispersas (papel/WhatsApp/memória), o que aumenta risco de perda e decisões imprecisas; priorize centralizar tudo em um único sistema simples (ou, provisoriamente, em uma planilha estruturada em nuvem), crie cadastros-mestre de clientes e produtos com IDs únicos, digitalize documentos críticos, ative backup automático e defina quem pode incluir/editar; em 2–4 semanas, a meta é conseguir localizar qualquer venda, cliente ou item em um único lugar.",
+      "B": "Você já tem base digital, mas fragmentada; avance escolhendo um sistema principal que centralize clientes, vendas e estoque (ou padronize um único arquivo-base com colunas consistentes), estabeleça convenções de nomes e datas, backup diário automático e permissões por perfil; crie IDs únicos para cliente e produto e um fluxo de atualização semanal para reduzir retrabalho e inconsistências.",
+      "C": "Boa base: um sistema central já organiza clientes, vendas e estoque; para subir o nível, documente um glossário curto de campos (o que é margem, custo, canal), habilite exportações em CSV para análises, configure backup testado (inclua testes de restauração trimestrais) e aplique permissões por função; monitore qualidade de cadastro (duplicidade e lacunas) e defina uma rotina de correção mensal.",
+      "D": "Sua infraestrutura é madura (integração, backup e controle de acessos); garanta continuidade com testes de recuperação (RTO/RPO), auditoria de acessos, revisão trimestral de perfis (segregação de funções) e monitore a saúde das integrações; automatize snapshots e alertas de falhas para manter disponibilidade e confiança nos dados."
+    },
+    "Q2": {
+      "A": "O tempo excessivo para achar informações indica falta de ponto único de verdade; centralize relatórios essenciais em uma área padrão, padronize nomes de arquivos e pastas, crie atalhos para as 10 perguntas mais frequentes do negócio e estabeleça a meta de obter essas respostas em até 60 segundos; isso reduz decisões atrasadas e evita erros por dados desatualizados.",
+      "B": "Você consegue acessar, mas com atritos; desenhe um atalho operacional: salve consultas favoritas/relatórios prontos, simplifique a árvore de pastas, padronize filtros por período e canal e crie uma página-resumo (ou documento índice) com links para as principais visões; objetivo: responder às perguntas críticas em ≤60 segundos no desktop e no celular.",
+      "C": "A disponibilidade está boa; para otimizar, meça o tempo de resposta das principais consultas, adicione alertas para indicadores-chave (ex.: queda de conversão, ruptura), garanta acesso móvel com autenticação segura e prepare respostas “padrão” para dúvidas recorrentes do time; isso mantém agilidade mesmo em picos de demanda.",
+      "D": "Excelente disponibilidade; mantenha confiabilidade monitorando uptime, latência e erros, com logs de acesso e plano de contingência (internet/energia) e testes periódicos de failover; revise permissões trimestralmente para garantir que o acesso fácil continue seguro e em conformidade."
+    },
+    "Q3": {
+      "A": "Olhar números apenas no fim do mês ou em crises deixa a gestão reativa; selecione três KPIs críticos (ex.: faturamento, margem/CMV e ticket ou ocupação) e instituir um rito semanal de 20 minutos com causa-ação-responsável, além de um jornal de decisões simples; essa cadência transforma sinais dispersos em ações concretas e previsíveis.",
+      "B": "Acompanhar semanalmente é um bom começo; inclua comparação com meta e histórico (M/M, A/A), amplie KPIs para cobrir margem/CMV, giro/ruptura ou no-show conforme o modelo de negócio e registre, a cada reunião, a causa principal de variações e a ação decorrente; isso fortalece aprendizado e consistência decisória.",
+      "C": "A leitura diária de indicadores e análises semanais já cria ritmo; evolua com gatilhos de alerta (limiares para disparar ação), comentários semanais de causa e planos curtos com prazo e responsável; incorpore sazonais e feriados nas comparações para evitar falsas conclusões.",
+      "D": "Com dashboards diários e análises semanais estruturadas, foque em leading indicators (ex.: conversão topo de funil, ruptura prevista), previsões simples e pós-mortem de decisões relevantes; reduza métricas redundantes e garanta que cada painel tenha um dono e um objetivo claro de negócio."
+    },
+    "Q4": {
+      "A": "A incapacidade de cruzar áreas indica ausência de chaves/IDs e padrões; defina IDs únicos para cliente e produto, padronize nomes e categorias e consolide as vendas com esses IDs para habilitar análises simples (ex.: ticket por cliente, giro por produto); comece conectando vendas↔clientes↔produtos e evolua a partir daí.",
+      "B": "Cruzar dados manualmente é frágil e lento; padronize formatos (datas, códigos), crie uma tabela de correspondência para resolver códigos divergentes entre sistemas e registre regras de junção (qual campo casa com qual); reduza passos manuais com arquivos base recorrentes e revisões quinzenais de consistência.",
+      "C": "Você já cruza vendas, clientes e estoque com facilidade; avance para análises de lucratividade por cliente/categoria, cobertura de estoque e mix por canal, garantindo custos confiáveis; institua uma checagem mensal de consistência (duplicidade, lacunas) e documente as regras para replicar as análises sem ambiguidade.",
+      "D": "Análises complexas (margem por cliente, sazonalidade) exigem rigor; formalize definições (o que é margem, LTV, churn, ruptura), valide amostras periodicamente contra a operação, compare períodos equivalentes (evitando vieses) e mantenha um caderno de métodos para que as conclusões sejam reproduzíveis e auditáveis."
+    },
+    "Q5": {
+      "A": "Decidir só por intuição expõe o negócio a vieses; antes de decisões relevantes, consulte pelo menos duas métricas ligadas ao objetivo (ex.: margem e giro para precificação) e registre a hipótese, a ação e a métrica de sucesso; rode pequenos testes e compare resultado com a hipótese para aprender rápido e barato.",
+      "B": "Usar números apenas para confirmar a ideia traz viés de confirmação; defina critérios de sucesso antes da ação (ex.: +10% vendas com margem ≥X), compare cenários alternativos e registre o que foi decidido e por quê; uma revisão pós-ação (15 minutos) consolida aprendizados e evita repetir erros.",
+      "C": "Basear-se em histórico é bom, mas incompleto; complemente com cenários e sensibilidade (±10% em preço, demanda, custo), controle sazonalidade e avalie impacto financeiro esperado e observado; isso torna suas decisões mais robustas e defensáveis.",
+      "D": "Seu processo já compara cenários e testa hipóteses; padronize um protocolo de experimentos (pré, métrica-primária, tamanho mínimo, pós), não escale sem significância prática e conecte cada teste a impacto financeiro; mantenha um repositório de lições para acelerar decisões futuras."
+    },
+    "Q6": {
+      "A": "Contar com ‘achados ao acaso’ deixa dinheiro na mesa; rode todo mês um ranking simples (top produtos, clientes, horários, canais), aplique curva ABC e verifique desperdício/ruptura; escolha uma oportunidade por mês, execute uma ação clara e meça resultado para construir disciplina de captura de valor.",
+      "B": "Perceber padrões óbvios é um passo inicial; sistematize com relatórios semanais por categoria/canal, cruze com margem e estoque e defina gatilhos de ação (ex.: preço, reposição, bundle) quando o indicador passar do limite; registre ganhos e repita o que funcionar.",
+      "C": "Descobrir insights regularmente é ótimo; priorize por impacto×esforço, rode pilotos rápidos e quantifique ROI (receita ou margem incremental); mantenha um backlog de oportunidades e automatize alertas para os sinais que mais se repetem.",
+      "D": "Encontrar oportunidades não óbvias com resultados mensuráveis indica alto domínio; escale o processo com um portfólio de iniciativas (pipeline, dono, prazo, impacto), padronize playbooks vencedores, automatize detecção dos padrões mais valiosos e mantenha auditoria para evitar overfitting e garantir ética e conformidade."
+    }
+  }
+}
