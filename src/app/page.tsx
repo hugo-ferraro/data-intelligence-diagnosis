@@ -623,7 +623,7 @@ export default function Home() {
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Diagnóstico do seu negócio 
-            <span className="bg-brand-gradient bg-clip-text text-transparent"> em 1 minuto </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-400"> em 1 minuto </span>
           </h2>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
