@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Home as HomeIcon } from 'lucide-react';
 import { DiagnosticData, QUESTIONS, QuestionOption, ScoreResult } from '@/types/diagnostic';
 import { generatePDF } from '@/lib/pdf-generator';
 import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
@@ -52,6 +52,50 @@ export default function Home() {
             setDataSaved(parsed.dataSaved || false);
             setResult(parsed.result || null);
             setIsSubmitting(parsed.isSubmitting || false);
+            
+            // If the diagnostic was completed (step 5), ensure we stay in diagnostic view
+            // and regenerate the PDF if needed
+            if (parsed.currentStep === 5 && parsed.dataSaved && !parsed.isGenerating) {
+              // The diagnostic is complete, user should see the completion screen
+              console.log('Diagnostic completed, staying in diagnostic view');
+              
+              // Try to restore PDF blob from localStorage first
+              const savedPdfBlob = localStorage.getItem('pdfBlob');
+              if (savedPdfBlob) {
+                // Convert base64 back to blob
+                fetch(savedPdfBlob)
+                  .then(res => res.blob())
+                  .then(blob => {
+                    setPdfBlob(blob);
+                  })
+                  .catch(error => {
+                    console.error('Error restoring PDF blob:', error);
+                    // If restoration fails, regenerate the PDF
+                    if (parsed.data) {
+                      console.log('Regenerating PDF for completed diagnostic');
+                      generatePDF(parsed.data as DiagnosticData)
+                        .then(blob => {
+                          setPdfBlob(blob);
+                        })
+                        .catch(error => {
+                          console.error('Error regenerating PDF:', error);
+                          setError('Erro ao regenerar o PDF. Tente novamente.');
+                        });
+                    }
+                  });
+              } else if (parsed.data) {
+                // No saved PDF blob, regenerate it
+                console.log('Regenerating PDF for completed diagnostic');
+                generatePDF(parsed.data as DiagnosticData)
+                  .then(blob => {
+                    setPdfBlob(blob);
+                  })
+                  .catch(error => {
+                    console.error('Error regenerating PDF:', error);
+                    setError('Erro ao regenerar o PDF. Tente novamente.');
+                  });
+              }
+            }
           } else {
             // Only restore home state if they were actually on home
             setCurrentView('home');
@@ -77,11 +121,24 @@ export default function Home() {
       isSubmitting
     };
     localStorage.setItem('appState', JSON.stringify(stateToSave));
-  }, [currentView, currentStep, currentQuestion, data, isGenerating, error, dataSaved, result, isSubmitting]);
+    
+    // Save PDF blob separately if it exists
+    if (pdfBlob) {
+      // Convert blob to base64 for localStorage storage
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        localStorage.setItem('pdfBlob', base64);
+      };
+      reader.readAsDataURL(pdfBlob);
+    }
+  }, [currentView, currentStep, currentQuestion, data, isGenerating, error, dataSaved, result, isSubmitting, pdfBlob]);
 
   const handleStartDiagnostic = () => {
     setCurrentView('diagnostic');
   };
+
+
 
   // Diagnostic functions
   const handleNext = () => {
@@ -567,6 +624,31 @@ export default function Home() {
                                 >
                                   <Download className="w-5 h-5" />
                                   Baixar diagnóstico
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    // Clear all diagnostic state when going back to home
+                                    localStorage.removeItem('appState');
+                                    localStorage.removeItem('pdfBlob');
+                                    localStorage.removeItem('diagnosticData');
+                                    
+                                    // Reset all state
+                                    setCurrentView('home');
+                                    setCurrentStep(1);
+                                    setCurrentQuestion(0);
+                                    setData({});
+                                    setIsGenerating(false);
+                                    setPdfBlob(null);
+                                    setError(null);
+                                    setDataSaved(false);
+                                    setResult(null);
+                                    setIsSubmitting(false);
+                                  }}
+                                  variant="ghost"
+                                  className="flex items-center gap-2 px-8 py-4 text-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                                >
+                                  <HomeIcon className="w-5 h-5" />
+                                  Voltar ao início
                                 </Button>
                               </div>
                             </>
