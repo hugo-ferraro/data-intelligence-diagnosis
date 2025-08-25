@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight, Download, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { DiagnosticData, QUESTIONS, QuestionOption, ScoreResult } from '@/types/diagnostic';
 import { generatePDF } from '@/lib/pdf-generator';
 import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
