@@ -32,8 +32,14 @@ export function GoogleTagManager() {
   );
 }
 
+// Define data layer event interface
+export interface DataLayerEvent {
+  event: string;
+  [key: string]: unknown;
+}
+
 // Utility function to push events to data layer
-export function pushToDataLayer(data: any) {
+export function pushToDataLayer(data: DataLayerEvent) {
   if (typeof window !== 'undefined' && window.dataLayer) {
     window.dataLayer.push(data);
   }
@@ -42,6 +48,6 @@ export function pushToDataLayer(data: any) {
 // Declare global dataLayer type
 declare global {
   interface Window {
-    dataLayer: any[];
+    dataLayer: DataLayerEvent[];
   }
 }

@@ -11,83 +11,11 @@ import { DiagnosticData, QUESTIONS, QuestionOption } from '@/types/diagnostic';
 import { generatePDF } from '@/lib/pdf-generator';
 import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
 import { useRouter } from 'next/navigation';
+import { pushToDataLayer } from '@/components/GoogleTagManager';
 
 const TOTAL_STEPS = 5;
 
-// Data Layer utility functions
-const pushToDataLayer = (event: string, data: Record<string, unknown>) => {
-  if (typeof window !== 'undefined' && window.dataLayer) {
-    window.dataLayer.push({
-      event,
-      ...data
-    });
-  }
-};
 
-const trackFormSubmit = (formData: Partial<DiagnosticData>) => {
-  // Google Tag Manager Data Layer
-  pushToDataLayer('form_submit', {
-    form_name: 'diagnostico_maturidade_dados',
-    form_id: 'diagnostic-form',
-    form_data: {
-      nome: formData.nome,
-      empresa: formData.empresa,
-      nicho: formData.nicho,
-      funcionarios: formData.funcionarios,
-      email: formData.email,
-      whatsapp: formData.whatsapp,
-      privacy_consent: formData.privacyConsent,
-      utm_source: formData.utmSource,
-      utm_medium: formData.utmMedium,
-      utm_campaign: formData.utmCampaign,
-      utm_term: formData.utmTerm,
-      utm_content: formData.utmContent,
-      gclid: formData.gclid,
-      fbclid: formData.fbclid
-    }
-  });
-
-  // Google Analytics 4 (gtag)
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'form_submit', {
-      form_name: 'diagnostico_maturidade_dados',
-      form_id: 'diagnostic-form',
-      custom_parameters: {
-        empresa: formData.empresa,
-        nicho: formData.nicho,
-        funcionarios: formData.funcionarios,
-        utm_source: formData.utmSource,
-        utm_medium: formData.utmMedium,
-        utm_campaign: formData.utmCampaign
-      }
-    });
-  }
-
-  // Facebook Pixel (if available)
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Lead', {
-      content_name: 'Diagnóstico de Maturidade em Dados',
-      content_category: 'Form Submission',
-      value: 1,
-      currency: 'BRL'
-    });
-  }
-
-  console.log('Form submit tracked:', {
-    event: 'form_submit',
-    form_name: 'diagnostico_maturidade_dados',
-    form_data: formData
-  });
-};
-
-// Type declarations for global objects
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-    fbq?: (...args: unknown[]) => void;
-  }
-}
 
 export default function Diagnostic() {
   const router = useRouter();
@@ -167,8 +95,35 @@ export default function Diagnostic() {
   };
 
   const handleSubmit = async () => {
-    // Track form submission
-    trackFormSubmit(data);
+    // Track form submission with GTM
+    pushToDataLayer({
+      event: 'form_submit',
+      form_name: 'diagnostic_form',
+      form_data: {
+        nome: data.nome || '',
+        empresa: data.empresa || '',
+        nicho: data.nicho || '',
+        funcionarios: data.funcionarios || '',
+        email: data.email || '',
+        whatsapp: data.whatsapp || '',
+        privacyConsent: data.privacyConsent || false,
+        // UTM/Attribution data
+        utmSource: data.utmSource,
+        utmMedium: data.utmMedium,
+        utmCampaign: data.utmCampaign,
+        utmTerm: data.utmTerm,
+        utmContent: data.utmContent,
+        gclid: data.gclid,
+        fbclid: data.fbclid,
+        // Question responses
+        Q1: data.Q1 || '',
+        Q2: data.Q2 || '',
+        Q3: data.Q3 || '',
+        Q4: data.Q4 || '',
+        Q5: data.Q5 || '',
+        Q6: data.Q6 || '',
+      }
+    });
     
     localStorage.setItem('diagnosticData', JSON.stringify(data));
     setCurrentStep(5);

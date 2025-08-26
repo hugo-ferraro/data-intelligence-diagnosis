@@ -70,8 +70,8 @@ export default function GTMTestPage() {
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
         <h3 className="font-semibold mb-2">Instructions:</h3>
         <ol className="list-decimal list-inside space-y-1 text-sm">
-          <li>Click "Test GTM Events" to push test events to the data layer</li>
-          <li>Click "Check Data Layer" to see the current state of the data layer</li>
+          <li>Click &quot;Test GTM Events&quot; to push test events to the data layer</li>
+          <li>Click &quot;Check Data Layer&quot; to see the current state of the data layer</li>
           <li>Open browser developer tools and check the Console tab for any errors</li>
           <li>Check Google Tag Manager preview mode to see if events are being received</li>
         </ol>
