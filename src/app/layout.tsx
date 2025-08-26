@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GoogleTagManager } from "@/components/GoogleTagManager";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
+        <GoogleTagManager />
         <TooltipProvider>
           <Toaster />
           <Sonner />

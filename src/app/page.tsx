@@ -14,6 +14,7 @@ import { generatePDF } from '@/lib/pdf-generator';
 import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
 import { calculateScore, getDimensionName } from '@/lib/scoring';
 import { isValidEmail, isValidWhatsApp, formatWhatsApp } from '@/lib/utils';
+import { pushToDataLayer } from '@/components/GoogleTagManager';
 
 // View types for single page app
 type View = 'home' | 'diagnostic';
@@ -169,6 +170,12 @@ export default function Home() {
   }, [currentView, currentStep, currentQuestion, data, isGenerating, error, dataSaved, result, isSubmitting, validationErrors, pdfBlob]);
 
   const handleStartDiagnostic = () => {
+    // Track diagnostic start
+    pushToDataLayer({
+      event: 'diagnostic_start',
+      form_name: 'diagnostic_form'
+    });
+    
     setCurrentView('diagnostic');
   };
 
@@ -179,6 +186,17 @@ export default function Home() {
     if (currentStep === 2 && currentQuestion < QUESTIONS.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      // Track step completion
+      pushToDataLayer({
+        event: 'step_completed',
+        form_name: 'diagnostic_form',
+        step_number: currentStep,
+        step_name: currentStep === 1 ? 'identification' : 
+                  currentStep === 2 ? 'questions' : 
+                  currentStep === 3 ? 'business_info' : 
+                  'contact_consent'
+      });
+      
       setCurrentStep(currentStep + 1);
       if (currentStep === 2) setCurrentQuestion(0);
     }
@@ -207,6 +225,45 @@ export default function Home() {
     
     // Store data in localStorage first
     localStorage.setItem('diagnosticData', JSON.stringify(data));
+    
+    // Calculate maturity score for tracking
+    const calculatedResult = calculateScore(data as DiagnosticData);
+    
+    // Push form submission to Google Tag Manager data layer
+    pushToDataLayer({
+      event: 'form_submit',
+      form_name: 'diagnostic_form',
+      form_data: {
+        nome: data.nome || '',
+        empresa: data.empresa || '',
+        nicho: data.nicho || '',
+        funcionarios: data.funcionarios || '',
+        email: data.email || '',
+        whatsapp: data.whatsapp || '',
+        privacyConsent: data.privacyConsent || false,
+        // UTM/Attribution data
+        utmSource: data.utmSource,
+        utmMedium: data.utmMedium,
+        utmCampaign: data.utmCampaign,
+        utmTerm: data.utmTerm,
+        utmContent: data.utmContent,
+        utmAdset: data.utmAdset,
+        utmAd: data.utmAd,
+        gclid: data.gclid,
+        fbclid: data.fbclid,
+        // Question responses
+        Q1: data.Q1 || '',
+        Q2: data.Q2 || '',
+        Q3: data.Q3 || '',
+        Q4: data.Q4 || '',
+        Q5: data.Q5 || '',
+        Q6: data.Q6 || '',
+        // Maturity score
+        maturity_score: calculatedResult.totalScore,
+        maturity_level: calculatedResult.nivel,
+        dimension_scores: calculatedResult.subscores
+      }
+    });
     
     // Update state - React will batch these automatically
     setCurrentStep(5);
@@ -292,6 +349,14 @@ export default function Home() {
 
   const handleDownload = () => {
     if (pdfBlob && data) {
+      // Track PDF download
+      pushToDataLayer({
+        event: 'pdf_download',
+        form_name: 'diagnostic_form',
+        user_name: data.nome || 'usuario',
+        maturity_score: result?.totalScore || 0
+      });
+      
       const url = URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -504,6 +569,16 @@ export default function Home() {
                                       ...prev,
                                       [qid]: key as QuestionOption,
                                     }));
+                                    
+                                    // Track question answer
+                                    pushToDataLayer({
+                                      event: 'question_answered',
+                                      form_name: 'diagnostic_form',
+                                      question_id: qid,
+                                      question_number: currentQuestion + 1,
+                                      answer: key,
+                                      category: QUESTIONS[currentQuestion].category
+                                    });
                                   }}
                                   className={[
                                     'w-full p-4 text-left border-2 rounded-lg transition-all duration-300',
@@ -723,6 +798,14 @@ export default function Home() {
                                 </Button>
                                 <Button
                                   onClick={() => {
+                                    // Track return to home
+                                    pushToDataLayer({
+                                      event: 'return_to_home',
+                                      form_name: 'diagnostic_form',
+                                      user_name: data.nome || 'usuario',
+                                      maturity_score: result?.totalScore || 0
+                                    });
+                                    
                                     // Clear all diagnostic state when going back to home
                                     localStorage.removeItem('appState');
                                     localStorage.removeItem('pdfBlob');
