@@ -515,7 +515,7 @@ export default function Home() {
         <div className="container max-w-6xl mx-auto px-4 py-6 sm:py-12">
           <div className="flex flex-col items-center">
             <div className="w-full max-w-3xl">
-              <div className="flex justify-center items-start px-2 mt-24 sm:mt-28 py-8">
+              <div className="flex justify-center items-start px-2 mt-24 sm:mt-28 py-3">
                                   <form 
                     onSubmit={(e) => {
                       e.preventDefault();
