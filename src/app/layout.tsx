@@ -23,14 +23,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://diagnostico-dados.falqon.com.br'),
+  metadataBase: new URL('https://diagnostico.falqon.ai'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://diagnostico-dados.falqon.com.br',
+    url: 'https://diagnostico.falqon.ai',
     title: 'Diagnóstico de Maturidade em Dados - Falqon',
     description: 'Avalie gratuitamente o nível de maturidade em dados da sua empresa e receba um plano personalizado para transformar informações em resultados.',
     siteName: 'Falqon - Diagnóstico de Dados',
