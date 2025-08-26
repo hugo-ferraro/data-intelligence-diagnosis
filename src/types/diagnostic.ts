@@ -40,6 +40,8 @@ export interface DiagnosticData {
   utmCampaign?: string;
   utmTerm?: string;
   utmContent?: string;
+  utmAdset?: string;
+  utmAd?: string;
   referrer?: string;
   landingUrl?: string;
   gclid?: string;

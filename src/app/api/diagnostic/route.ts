@@ -63,10 +63,14 @@ export async function POST(request: NextRequest) {
         utm_campaign: data.utmCampaign,
         utm_term: data.utmTerm,
         utm_content: data.utmContent,
+        utm_adset: data.utmAdset,
+        utm_ad: data.utmAd,
         referrer: data.referrer,
         landing_url: data.landingUrl,
         gclid: data.gclid,
         fbclid: data.fbclid,
+        // Calculate and store maturity score as integer
+        maturity_score: data.maturityScore || 0,
       })
       .select()
       .single();

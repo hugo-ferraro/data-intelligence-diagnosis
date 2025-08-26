@@ -13,6 +13,7 @@ import { DiagnosticData, QUESTIONS, QuestionOption, ScoreResult } from '@/types/
 import { generatePDF } from '@/lib/pdf-generator';
 import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
 import { calculateScore, getDimensionName } from '@/lib/scoring';
+import { isValidEmail, isValidWhatsApp, formatWhatsApp } from '@/lib/utils';
 
 // View types for single page app
 type View = 'home' | 'diagnostic';
@@ -31,14 +32,18 @@ export default function Home() {
   const [dataSaved, setDataSaved] = useState(false);
   const [result, setResult] = useState<ScoreResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    whatsapp?: string;
+  }>({});
 
   // Persist state in localStorage and restore on page load
   useEffect(() => {
-    const savedState = localStorage.getItem('appState');
-    if (savedState) {
-      try {
+    try {
+      const savedState = localStorage.getItem('appState');
+      if (savedState) {
         const parsed = JSON.parse(savedState);
-        if (parsed.currentView && parsed.currentStep) {
+        if (parsed && parsed.currentView && parsed.currentStep) {
           console.log('Restoring state from localStorage:', parsed);
           
           // If user was in diagnostic mode, force them to stay in diagnostic mode
@@ -52,6 +57,7 @@ export default function Home() {
             setDataSaved(parsed.dataSaved || false);
             setResult(parsed.result || null);
             setIsSubmitting(parsed.isSubmitting || false);
+            setValidationErrors(parsed.validationErrors || {});
             
             // If the diagnostic was completed (step 5), ensure we stay in diagnostic view
             // and regenerate the PDF if needed
@@ -61,7 +67,7 @@ export default function Home() {
               
               // Try to restore PDF blob from localStorage first
               const savedPdfBlob = localStorage.getItem('pdfBlob');
-              if (savedPdfBlob) {
+              if (savedPdfBlob && typeof fetch === 'function') {
                 // Convert base64 back to blob
                 fetch(savedPdfBlob)
                   .then(res => res.blob())
@@ -71,7 +77,7 @@ export default function Home() {
                   .catch(error => {
                     console.error('Error restoring PDF blob:', error);
                     // If restoration fails, regenerate the PDF
-                    if (parsed.data) {
+                    if (parsed.data && typeof generatePDF === 'function') {
                       console.log('Regenerating PDF for completed diagnostic');
                       generatePDF(parsed.data as DiagnosticData)
                         .then(blob => {
@@ -83,7 +89,7 @@ export default function Home() {
                         });
                     }
                   });
-              } else if (parsed.data) {
+              } else if (parsed.data && typeof generatePDF === 'function') {
                 // No saved PDF blob, regenerate it
                 console.log('Regenerating PDF for completed diagnostic');
                 generatePDF(parsed.data as DiagnosticData)
@@ -101,38 +107,66 @@ export default function Home() {
             setCurrentView('home');
           }
         }
-      } catch (error) {
-        console.error('Error restoring state:', error);
       }
+    } catch (error) {
+      console.error('Error restoring state:', error);
     }
+  }, []);
+
+  // Capture UTM parameters from URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmData = {
+      utmSource: urlParams.get('utm_source') || undefined,
+      utmMedium: urlParams.get('utm_medium') || undefined,
+      utmCampaign: urlParams.get('utm_campaign') || undefined,
+      utmTerm: urlParams.get('utm_term') || undefined,
+      utmContent: urlParams.get('utm_content') || undefined,
+      utmAdset: urlParams.get('utm_adset') || undefined,
+      utmAd: urlParams.get('utm_ad') || undefined,
+      gclid: urlParams.get('gclid') || undefined,
+      fbclid: urlParams.get('fbclid') || undefined
+    };
+    
+    // Debug: Log captured UTM data
+    console.log('Captured UTM data:', utmData);
+    console.log('Current URL:', window.location.href);
+    console.log('URL params:', window.location.search);
+    
+    setData((prev: Partial<DiagnosticData>) => ({ ...prev, ...utmData }));
   }, []);
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
-    const stateToSave = {
-      currentView,
-      currentStep,
-      currentQuestion,
-      data,
-      isGenerating,
-      error,
-      dataSaved,
-      result,
-      isSubmitting
-    };
-    localStorage.setItem('appState', JSON.stringify(stateToSave));
-    
-    // Save PDF blob separately if it exists
-    if (pdfBlob) {
-      // Convert blob to base64 for localStorage storage
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        localStorage.setItem('pdfBlob', base64);
+    try {
+      const stateToSave = {
+        currentView,
+        currentStep,
+        currentQuestion,
+        data,
+        isGenerating,
+        error,
+        dataSaved,
+        result,
+        isSubmitting,
+        validationErrors
       };
-      reader.readAsDataURL(pdfBlob);
+      localStorage.setItem('appState', JSON.stringify(stateToSave));
+    
+      // Save PDF blob separately if it exists
+      if (pdfBlob) {
+        // Convert blob to base64 for localStorage storage
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          localStorage.setItem('pdfBlob', base64);
+        };
+        reader.readAsDataURL(pdfBlob);
+      }
+    } catch (error) {
+      console.error('Error saving state to localStorage:', error);
     }
-  }, [currentView, currentStep, currentQuestion, data, isGenerating, error, dataSaved, result, isSubmitting, pdfBlob]);
+  }, [currentView, currentStep, currentQuestion, data, isGenerating, error, dataSaved, result, isSubmitting, validationErrors, pdfBlob]);
 
   const handleStartDiagnostic = () => {
     setCurrentView('diagnostic');
@@ -179,29 +213,37 @@ export default function Home() {
     setIsGenerating(true);
     setError(null);
     
-    try {
-      const dataToSave = {
-        nome: data.nome || '',
-        Q1: data.Q1 || 'A',
-        Q2: data.Q2 || 'A',
-        Q3: data.Q3 || 'A',
-        Q4: data.Q4 || 'A',
-        Q5: data.Q5 || 'A',
-        Q6: data.Q6 || 'A',
-        empresa: data.empresa || '',
-        nicho: data.nicho || '',
-        funcionarios: data.funcionarios || '',
-        email: data.email || '',
-        whatsapp: data.whatsapp || '',
-        privacyConsent: data.privacyConsent || false,
-        utmSource: data.utmSource,
-        utmMedium: data.utmMedium,
-        utmCampaign: data.utmCampaign,
-        utmTerm: data.utmTerm,
-        utmContent: data.utmContent,
-        gclid: data.gclid,
-        fbclid: data.fbclid,
-      };
+          try {
+        // Calculate maturity score first
+        const calculatedResult = calculateScore(data as DiagnosticData);
+        
+        const dataToSave = {
+          nome: data.nome || '',
+          Q1: data.Q1 || 'A',
+          Q2: data.Q2 || 'A',
+          Q3: data.Q3 || 'A',
+          Q4: data.Q4 || 'A',
+          Q5: data.Q5 || 'A',
+          Q6: data.Q6 || 'A',
+          empresa: data.empresa || '',
+          nicho: data.nicho || '',
+          funcionarios: data.funcionarios || '',
+          email: data.email || '',
+          whatsapp: (typeof formatWhatsApp === 'function' ? formatWhatsApp(data.whatsapp || '') : null) || data.whatsapp || '',
+          privacyConsent: data.privacyConsent || false,
+          // UTM/Attribution data
+          utmSource: data.utmSource,
+          utmMedium: data.utmMedium,
+          utmCampaign: data.utmCampaign,
+          utmTerm: data.utmTerm,
+          utmContent: data.utmContent,
+          utmAdset: data.utmAdset,
+          utmAd: data.utmAd,
+          gclid: data.gclid,
+          fbclid: data.fbclid,
+          // Maturity score as integer
+          maturityScore: calculatedResult.totalScore,
+        };
       
       await saveDiagnosticData(dataToSave);
       setDataSaved(true);
@@ -210,8 +252,7 @@ export default function Home() {
       const pdfBlob = await generatePDF(data as DiagnosticData);
       setPdfBlob(pdfBlob);
       
-      // Calculate results
-      const calculatedResult = calculateScore(data as DiagnosticData);
+      // Set the result (already calculated above)
       setResult(calculatedResult);
       
       console.log('handleSubmit completed - currentView should still be diagnostic, step should be 5');
@@ -237,7 +278,13 @@ export default function Home() {
       case 3:
         return Boolean(data.empresa?.trim() && data.nicho?.trim() && data.funcionarios?.trim());
       case 4:
-        return Boolean(data.email?.trim() && data.whatsapp?.trim() && data.privacyConsent);
+        return Boolean(
+          data.email?.trim() && 
+          data.whatsapp?.trim() && 
+          data.privacyConsent &&
+          typeof isValidEmail === 'function' && isValidEmail(data.email) &&
+          typeof isValidWhatsApp === 'function' && isValidWhatsApp(data.whatsapp)
+        );
       default:
         return false;
     }
@@ -253,6 +300,51 @@ export default function Home() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+    }
+  };
+
+  // Validation functions
+  const validateEmail = (email: string) => {
+    if (!email || !email.trim()) {
+      setValidationErrors(prev => ({ ...prev, email: 'E-mail é obrigatório' }));
+      return false;
+    }
+    if (typeof isValidEmail === 'function' && !isValidEmail(email)) {
+      setValidationErrors(prev => ({ ...prev, email: 'Digite um e-mail válido' }));
+      return false;
+    }
+    setValidationErrors(prev => ({ ...prev, email: undefined }));
+    return true;
+  };
+
+  const validateWhatsApp = (whatsapp: string) => {
+    if (!whatsapp || !whatsapp.trim()) {
+      setValidationErrors(prev => ({ ...prev, whatsapp: 'WhatsApp é obrigatório' }));
+      return false;
+    }
+    if (typeof isValidWhatsApp === 'function' && !isValidWhatsApp(whatsapp)) {
+      setValidationErrors(prev => ({ ...prev, whatsapp: 'Digite um WhatsApp válido (ex: (11) 99999-9999)' }));
+      return false;
+    }
+    setValidationErrors(prev => ({ ...prev, whatsapp: undefined }));
+    return true;
+  };
+
+  const handleEmailChange = (email: string) => {
+    setData((prev) => ({ ...prev, email }));
+    if (email && email.trim()) {
+      validateEmail(email);
+    } else {
+      setValidationErrors(prev => ({ ...prev, email: undefined }));
+    }
+  };
+
+  const handleWhatsAppChange = (whatsapp: string) => {
+    setData((prev) => ({ ...prev, whatsapp }));
+    if (whatsapp && whatsapp.trim()) {
+      validateWhatsApp(whatsapp);
+    } else {
+      setValidationErrors(prev => ({ ...prev, whatsapp: undefined }));
     }
   };
 
@@ -276,7 +368,9 @@ export default function Home() {
     }
     
     // Step 4: Contact & consent (15% when completed)
-    if (data.email?.trim() && data.whatsapp?.trim() && data.privacyConsent) {
+    if (data.email?.trim() && data.whatsapp?.trim() && data.privacyConsent && 
+        typeof isValidEmail === 'function' && isValidEmail(data.email) && 
+        typeof isValidWhatsApp === 'function' && isValidWhatsApp(data.whatsapp)) {
       progress += 15;
     }
     
@@ -519,11 +613,12 @@ export default function Home() {
                             type="email"
                             placeholder="seu@email.com"
                             value={data.email || ''}
-                            onChange={(e) =>
-                              setData((prev) => ({ ...prev, email: e.target.value }))
-                            }
-                            className="mt-2 text-lg p-4"
+                            onChange={(e) => handleEmailChange(e.target.value)}
+                            className={`mt-2 text-lg p-4 ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                           />
+                          {validationErrors.email && (
+                            <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                          )}
                         </div>
 
                         <div>
@@ -534,11 +629,12 @@ export default function Home() {
                             id="whatsapp"
                             placeholder="(11) 99999-9999"
                             value={data.whatsapp || ''}
-                            onChange={(e) =>
-                              setData((prev) => ({ ...prev, whatsapp: e.target.value }))
-                            }
-                            className="mt-2 text-lg p-4"
+                            onChange={(e) => handleWhatsAppChange(e.target.value)}
+                            className={`mt-2 text-lg p-4 ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
                           />
+                          {validationErrors.whatsapp && (
+                            <p className="mt-1 text-sm text-red-600">{validationErrors.whatsapp}</p>
+                          )}
                         </div>
 
                         <div className="flex items-start space-x-3 p-4 border rounded-lg">

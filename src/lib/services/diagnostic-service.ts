@@ -1,4 +1,5 @@
 import { DiagnosticData } from '@/types/diagnostic';
+import { registerLeadConversion } from './rd-station-service';
 
 export interface SaveDiagnosticData {
   nome: string;
@@ -20,10 +21,13 @@ export interface SaveDiagnosticData {
   utmCampaign?: string;
   utmTerm?: string;
   utmContent?: string;
+  utmAdset?: string;
+  utmAd?: string;
   referrer?: string;
   landingUrl?: string;
   gclid?: string;
   fbclid?: string;
+  maturityScore?: number;
 }
 
 export async function saveDiagnosticData(data: SaveDiagnosticData) {
@@ -49,6 +53,16 @@ export async function saveDiagnosticData(data: SaveDiagnosticData) {
 
     const result = await response.json();
     console.log('Diagnostic data saved successfully:', result.data);
+    
+    // Register lead conversion with RD Station Marketing
+    // This is done after successful save to ensure we have the data
+    try {
+      await registerLeadConversion(data);
+    } catch (rdError) {
+      console.error('RD Station registration failed, but diagnostic was saved:', rdError);
+      // Don't fail the entire process if RD Station fails
+    }
+    
     return result.data;
   } catch (error) {
     console.error('Error saving diagnostic data:', error);
