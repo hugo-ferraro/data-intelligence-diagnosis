@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
+import CookieConsent from "@/components/CookieConsent";
+import Footer from "@/components/Footer";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,12 +23,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
         <GoogleTagManager />
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          {children}
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+          <CookieConsent />
         </TooltipProvider>
       </body>
     </html>

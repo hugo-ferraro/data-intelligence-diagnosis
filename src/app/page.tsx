@@ -15,11 +15,15 @@ import { saveDiagnosticData } from '@/lib/services/diagnostic-service';
 import { calculateScore, getDimensionName } from '@/lib/scoring';
 import { isValidEmail, isValidWhatsApp, formatWhatsApp } from '@/lib/utils';
 import { pushToDataLayer } from '@/components/GoogleTagManager';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // View types for single page app
 type View = 'home' | 'diagnostic';
 
 export default function Home() {
+  // Mobile detection
+  const isMobile = useIsMobile();
+  
   // State for managing current view
   const [currentView, setCurrentView] = useState<View>('home');
   
@@ -455,28 +459,32 @@ export default function Home() {
         <div className="w-full mx-auto fixed top-0 left-0 right-0 z-30 bg-white/95 pt-4 pb-2 px-4 shadow-md">
           <div className="container max-w-6xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-2">
-              <div className="flex flex-col sm:flex-row sm:items-center mb-1 sm:mb-0 break-words overflow-hidden">
-                <span className="font-semibold text-gray-700 mb-1 sm:mb-0 sm:mr-3">
-                  {currentStep === 1 ? 'Identificação' : 
-                   currentStep === 2 ? `Pergunta ${currentQuestion + 1} de ${QUESTIONS.length}` :
-                   currentStep === 3 ? 'Informações do Negócio' :
-                   currentStep === 4 ? 'Contato & LGPD' :
-                   'Gerando Diagnóstico'}
+              {!isMobile && (
+                <div className="flex flex-col sm:flex-row sm:items-center mb-1 sm:mb-0 break-words overflow-hidden">
+                  <span className="font-semibold text-gray-700 mb-1 sm:mb-0 sm:mr-3">
+                    {currentStep === 1 ? 'Identificação' : 
+                     currentStep === 2 ? `Pergunta ${currentQuestion + 1} de ${QUESTIONS.length}` :
+                     currentStep === 3 ? 'Informações do Negócio' :
+                     currentStep === 4 ? 'Contato & LGPD' :
+                     'Gerando Diagnóstico'}
+                  </span>
+                  <span className="hidden sm:inline text-gray-400 mr-3" aria-hidden="true">
+                    •
+                  </span>
+                  <span className="font-medium" style={{ color: '#f27e1a' }}>
+                    {currentStep === 1 ? 'Dados iniciais' :
+                     currentStep === 2 ? QUESTIONS[currentQuestion].category :
+                     currentStep === 3 ? 'Empresa' :
+                     currentStep === 4 ? 'Consentimento' :
+                     'PDF'}
+                  </span>
+                </div>
+              )}
+              {!isMobile && (
+                <span className="font-medium" style={{ color: '#f27e1a' }} aria-live="polite" aria-atomic="true">
+                  {Math.round(progress)}%
                 </span>
-                <span className="hidden sm:inline text-gray-400 mr-3" aria-hidden="true">
-                  •
-                </span>
-                <span className="font-medium" style={{ color: '#f27e1a' }}>
-                  {currentStep === 1 ? 'Dados iniciais' :
-                   currentStep === 2 ? QUESTIONS[currentQuestion].category :
-                   currentStep === 3 ? 'Empresa' :
-                   currentStep === 4 ? 'Consentimento' :
-                   'PDF'}
-                </span>
-              </div>
-              <span className="font-medium" style={{ color: '#f27e1a' }} aria-live="polite" aria-atomic="true">
-                {Math.round(progress)}%
-              </span>
+              )}
             </div>
 
             {/* Barra de progresso */}
