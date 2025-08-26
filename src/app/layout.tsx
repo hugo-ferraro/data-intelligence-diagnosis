@@ -79,6 +79,14 @@ export const metadata: Metadata = {
   },
   themeColor: '#ffffff',
   colorScheme: 'light',
+  other: {
+    'msapplication-TileColor': '#ffffff',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'Diagnóstico Dados',
+    'mobile-web-app-capable': 'yes',
+    'application-name': 'Diagnóstico Dados',
+  },
 };
 
 export default function RootLayout({
@@ -88,19 +96,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-        <link rel="apple-touch-icon" href="/favicon.png" />
-        <link rel="shortcut icon" href="/favicon.png" />
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Diagnóstico Dados" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="application-name" content="Diagnóstico Dados" />
-      </head>
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <GoogleTagManager />
         <TooltipProvider>
