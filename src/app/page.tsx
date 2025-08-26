@@ -16,6 +16,7 @@ import { calculateScore, getDimensionName } from '@/lib/scoring';
 import { isValidEmail, isValidWhatsApp, formatWhatsApp } from '@/lib/utils';
 import { pushToDataLayer } from '@/components/GoogleTagManager';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Image from 'next/image';
 
 // View types for single page app
 type View = 'home' | 'diagnostic';
@@ -515,7 +516,7 @@ export default function Home() {
         <div className="container max-w-6xl mx-auto px-4 py-6 sm:py-12">
           <div className="flex flex-col items-center">
             <div className="w-full max-w-3xl">
-              <div className="flex justify-center items-start px-2 mt-24 sm:mt-28 py-3">
+              <div className="flex justify-center items-start px-2 mt-24 sm:mt-28 py-0">
                                   <form 
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -887,8 +888,22 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       
+      {/* Compact Header with Logo */}
+      <div className="w-full bg-white py-6 px-4">
+        <div className="container max-w-6xl mx-auto flex justify-center">
+          <Image
+            src="/falqon-logo.png"
+            alt="Falqon Logo"
+            width={120}
+            height={40}
+            className="h-6 w-auto"
+            priority
+          />
+        </div>
+      </div>
+      
       {/* Hero Section */}
-      <section className="py-16 px-6 mt-16">
+      <section className="py-16 px-6 mt-8">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Diagnóstico do seu negócio 
