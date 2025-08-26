@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: 'Falqon - Diagnóstico de Dados',
     images: [
       {
-        url: '/falqon-logo.png',
+        url: 'https://diagnostico.falqon.ai',
         width: 1200,
         height: 630,
         alt: 'Falqon - Diagnóstico de Maturidade em Dados',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Diagnóstico de Maturidade em Dados - Falqon',
     description: 'Avalie gratuitamente o nível de maturidade em dados da sua empresa e receba um plano personalizado para transformar informações em resultados.',
-    images: ['/falqon-logo.png'],
+    images: ['https://diagnostico.falqon.ai'],
     creator: '@falqon',
   },
   robots: {
